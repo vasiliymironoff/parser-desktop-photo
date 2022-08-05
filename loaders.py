@@ -20,11 +20,8 @@ class LoaderPhoto:
         self.final_count_photo = int(input('Введите количество фотографий: '))
 
         self._create_directory()
-
-        # self.widgets = ['Loading: ', progressbar.AnimatedMarker()]
         self.widgets = [
             'Загружено ', progressbar.Counter(), '/', str(self.final_count_photo),
-
         ]
         self.bar = progressbar.ProgressBar(widgets=self.widgets, maxval=self.final_count_photo).start()
 
@@ -135,7 +132,10 @@ class AsyncLoaderPhoto(LoaderPhoto):
                     if self.verbose:
                         print('[+]', name_file.ljust(50))
                     self.count_photo += 1
-                    self.bar.update(self.count_photo)
+                    try:
+                        self.bar.update(self.count_photo)
+                    except ValueError:
+                        pass
 
     def _open_page_with_photo(self, url) -> list:
         response_page = requests.get(url, headers=get_headers()).text
@@ -144,13 +144,13 @@ class AsyncLoaderPhoto(LoaderPhoto):
         n_href_photo = []
         for tag_a in n_tag_a:
             href = tag_a.get('href')
-            if self.count_append_download_photo >= self.final_count_photo:
+            if self.count_append_download_photo == self.final_count_photo:
                 break
             self.count_append_download_photo += 1
             n_href_photo.append(self._download_photo(href))
         return n_href_photo
 
-    async def download_start(self):
+    async def _download_start(self):
         count_pages = math.ceil(self.final_count_photo / 24)
         print('Предварительная настройка. Это может занять некоторое время.')
         n_func = []
@@ -161,7 +161,7 @@ class AsyncLoaderPhoto(LoaderPhoto):
 
     def run(self):
         time_st = time.time()
-        asyncio.run(self.download_start())
+        asyncio.run(self._download_start())
         print('\nЗагрузка завершена. ', end='')
         s = int(time.time() - time_st)
-        print(f'Скачано {self.count_photo} фото. Время: {s // 60} минут {s % 60} секунд.')
+        print(f'Время: {s // 60} минут {s % 60} секунд.')
