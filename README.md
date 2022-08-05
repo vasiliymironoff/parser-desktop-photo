@@ -13,12 +13,15 @@
 1. клонируем репозиторий
 
 `git clone https://github.com/vasiliymironoff/parser-desktop-photo.git`
+
 2. создаем виртуальное окружение
 
 `python3 -m venv venv`
+
 3. устанавливаем зависимости
 
 `python3 install -r requirements.txt`
+
 4. используем
 
 `python3 main.py --help`
